@@ -901,20 +901,3 @@ mindmap
 ```
 
 ---
-
-### 8. Ball Delivery Flow
-
-```mermaid
-flowchart TD
-    Start([Ball Delivery Starts]) --> CreateBall[Create BallDetails]
-    CreateBall --> SetPlayers[Set playedBy & bowledBy]
-    SetPlayers --> DetermineBallType[Determine Ball Type<br/>NORMAL/WIDE/NOBALL]
-    
-    DetermineBallType --> CheckWicket{Is Wicket<br/>Taken?}
-    
-    CheckWicket -->|Yes 20%| Wicket[Set runType = ZERO]
-    Wicket --> CreateWicket[Create Wicket object]
-    CreateWicket --> SetStriker[Set striker = null]
-    SetStriker --> NotifyObservers
-    
-    CheckWicket -->|No 80
