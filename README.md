@@ -1,17 +1,341 @@
-# Cricbuzz Cricket Match Simulation - Reorganized UML Diagrams
+# Cricbuzz Cricket Match Simulation - Complete UML Documentation
 
-## 1. Complete System - Class Diagram (Organized by Layers)
+## Functional Requirements
+
+### 1. Match Management
+**FR1.1**: System shall support multiple match formats (T20, ODI, Test)  
+**FR1.2**: System shall conduct a toss to determine batting/bowling teams  
+**FR1.3**: System shall manage two innings per match  
+**FR1.4**: System shall determine and announce the winner based on runs scored  
+**FR1.5**: System shall track match metadata (date, venue, teams)
+
+### 2. Team Management
+**FR2.1**: Each team shall have 11 playing players and bench players  
+**FR2.2**: System shall maintain batting order through a queue structure  
+**FR2.3**: System shall manage bowling rotation with over limits per bowler  
+**FR2.4**: System shall prevent a bowler from bowling consecutive overs  
+**FR2.5**: System shall track and display team scorecards (batting and bowling)
+
+### 3. Player Management
+**FR3.1**: Each player shall have personal details (name, age, address)  
+**FR3.2**: System shall support different player types (Batsman, Bowler, All-rounder, Wicketkeeper, Captain)  
+**FR3.3**: Each player shall maintain separate batting and bowling statistics  
+**FR3.4**: System shall calculate and display strike rate for batsmen (runs/balls × 100)  
+**FR3.5**: System shall calculate and display economy rate for bowlers (runs/overs)
+
+### 4. Inning Management
+**FR4.1**: Each inning shall consist of a configurable number of overs (based on match type)  
+**FR4.2**: System shall enforce maximum overs per bowler based on match format  
+**FR4.3**: Second inning shall track target runs (first inning runs + 1)  
+**FR4.4**: Inning shall end when all overs are completed or all players are out  
+**FR4.5**: System shall track total runs scored per inning
+
+### 5. Over and Ball Management
+**FR5.1**: Each over shall consist of exactly 6 legal deliveries  
+**FR5.2**: System shall support ball types: Normal, Wide Ball, No Ball  
+**FR5.3**: System shall randomly determine ball outcomes (wicket or runs)  
+**FR5.4**: System shall support run types: 0, 1, 2, 3, 4, 6  
+**FR5.5**: System shall swap batsmen after odd runs (1 or 3)  
+**FR5.6**: System shall swap batsmen at the end of each over
+
+### 6. Wicket Management
+**FR6.1**: System shall simulate wickets with 20% probability  
+**FR6.2**: System shall support wicket types: Bowled, Caught, Run Out  
+**FR6.3**: System shall track which player took the wicket  
+**FR6.4**: System shall track in which over and on which ball the wicket occurred  
+**FR6.5**: System shall bring the next batsman when a wicket falls
+
+### 7. Score Management
+**FR7.1**: System shall update batting scores in real-time after each ball  
+**FR7.2**: System shall update bowling scores in real-time after each ball  
+**FR7.3**: System shall track: runs, balls played, fours, sixes for batsmen  
+**FR7.4**: System shall track: overs bowled, runs given, wickets, extras for bowlers  
+**FR7.5**: System shall automatically calculate strike rates and economy rates
+
+### 8. Display and Reporting
+**FR8.1**: System shall print detailed batting scorecard for each team  
+**FR8.2**: System shall print detailed bowling scorecard for each team  
+**FR8.3**: System shall display individual player statistics  
+**FR8.4**: System shall announce match winner with final scores
+
+---
+
+## Non-Functional Requirements
+
+### 1. Design Quality
+**NFR1.1**: System shall follow SOLID principles throughout the codebase  
+**NFR1.2**: System shall implement Observer pattern for automatic score updates  
+**NFR1.3**: System shall implement Strategy pattern for different match types  
+**NFR1.4**: System shall implement Controller pattern for team management  
+**NFR1.5**: System shall maintain loose coupling between components
+
+### 2. Maintainability
+**NFR2.1**: Code shall be modular with clear separation of concerns  
+**NFR2.2**: Each class shall have a single, well-defined responsibility  
+**NFR2.3**: System shall be easily extensible for new features without modifying existing code  
+**NFR2.4**: Code shall follow standard Java naming conventions
+
+### 3. Testability
+**NFR3.1**: Components shall be independently testable in isolation  
+**NFR3.2**: System shall support mocking for comprehensive unit tests  
+**NFR3.3**: Observer pattern shall allow isolated testing of score updates  
+**NFR3.4**: Controllers shall be testable without creating full team objects
+
+### 4. Extensibility
+**NFR4.1**: System shall allow adding new match formats without modifying existing code  
+**NFR4.2**: System shall allow adding new observers (e.g., commentary, statistics) easily  
+**NFR4.3**: System shall support adding new player types and wicket types  
+**NFR4.4**: System architecture shall support future database integration
+
+### 5. Reusability
+**NFR5.1**: Controllers shall be reusable across different team implementations  
+**NFR5.2**: Observer implementations shall be reusable for different subjects  
+**NFR5.3**: Match type strategies shall be reusable across multiple matches
+
+---
+
+## Objectives
+
+### Primary Objectives
+**OBJ1.1**: Implement Observer Pattern for automatic real-time score updates  
+**OBJ1.2**: Implement Strategy Pattern for flexible match format rules  
+**OBJ1.3**: Implement Controller Pattern for separated team management logic  
+**OBJ1.4**: Simulate realistic cricket match flow from toss to winner declaration
+
+### Design Objectives
+**OBJ2.1**: Create a scalable architecture supporting multiple match formats  
+**OBJ2.2**: Achieve high modularity with clear component boundaries  
+**OBJ2.3**: Follow SOLID principles (especially Single Responsibility and Open/Closed)  
+**OBJ2.4**: Demonstrate practical implementation of design patterns  
+**OBJ2.5**: Build loosely coupled, highly cohesive components
+
+### Quality Objectives
+**OBJ3.1**: Ensure accurate score calculations and state management  
+**OBJ3.2**: Achieve high code maintainability and readability  
+**OBJ3.3**: Create comprehensive and clear UML documentation  
+**OBJ3.4**: Enable easy testing through proper abstraction
+
+### Educational Objectives
+**OBJ4.1**: Illustrate SOLID principles in a real-world scenario  
+**OBJ4.2**: Provide reference implementation for design patterns  
+**OBJ4.3**: Show effective use of object-oriented programming concepts  
+**OBJ4.4**: Demonstrate separation of concerns in complex systems
+
+---
+
+## Design Patterns Used
+
+### Observer Pattern (Implemented)
+
+**Purpose**: Automatic score update mechanism. When a ball is delivered, all score observers are automatically notified and update their respective scorecards.
+
+**Problem Statement**:
+* **Challenge**: Ball delivery needs to update multiple scorecards (batting, bowling, potentially others)
+* **Issue**: Direct coupling between ball and scorecards makes system rigid
+* **Solution**: Observer pattern decouples ball delivery from score updates
+
+**Implementation**:
+* **Subject**: `BallDetails` (notifies when ball is delivered)
+* **Observer Interface**: `ScoreUpdaterObserver` (defines update contract)
+* **Concrete Observers**: `BattingScoreUpdater`, `BowlingScoreUpdater`
+* **State Objects**: `BattingScoreCard`, `BowlingScoreCard`
+
+**How it works**:
+
+```java
+// Ball delivery triggers automatic updates
+public void startBallDelivery(Team battingTeam, Team bowlingTeam, OverDetails over) {
+    // Determine ball outcome
+    this.ballType = BallType.NORMAL;
+    this.playedBy = battingTeam.getStriker();
+    this.bowledBy = bowlingTeam.getCurrentBowler();
+    
+    if (isWicketTaken()) {
+        this.runType = RunType.ZERO;
+        this.wicket = new Wicket(WicketType.BOLD, bowledBy, over, this);
+    } else {
+        this.runType = getRunType();
+    }
+    
+    // Automatically notify all observers
+    notifyUpdaters(this);
+}
+
+// Observer pattern notification
+private void notifyUpdaters(BallDetails ballDetails) {
+    for (ScoreUpdaterObserver observer : scoreUpdaterObserverList) {
+        observer.update(ballDetails);
+    }
+}
+```
+
+**Benefits**:
+* ✅ **Decoupling**: Ball delivery doesn't know about scorecards
+* ✅ **Extensibility**: Easy to add new observers (commentary, statistics, live feed)
+* ✅ **Automatic Updates**: All observers notified automatically
+* ✅ **Single Responsibility**: Each observer handles one type of update
+* ✅ **Open/Closed**: Add observers without modifying BallDetails
+
+---
+
+### Strategy Pattern (Implemented)
+
+**Purpose**: Support different cricket match formats (T20, ODI, Test) with different rules, allowing runtime selection of match type.
+
+**Problem Statement**:
+* **Client**: Match orchestrator needs different rules for different formats
+* **Challenge**: T20 (20 overs, 5 max/bowler), ODI (50 overs, 10 max/bowler), Test (unlimited)
+* **Issue**: Hard-coding rules makes system inflexible
+* **Solution**: Strategy pattern encapsulates format-specific rules
+
+**Implementation**:
+* **Context**: `Match` (uses match type strategy)
+* **Strategy Interface**: `MatchType` (defines rule methods)
+* **Concrete Strategies**: `T20Match`, `OneDayMatch`, `TestMatch`
+
+**How it works**:
+
+```java
+// Strategy interface
+public interface MatchType {
+    int noOfOvers();
+    int maxOverCountBowlers();
+}
+
+// T20 strategy
+public class T20Match implements MatchType {
+    @Override
+    public int noOfOvers() { return 20; }
+    
+    @Override
+    public int maxOverCountBowlers() { return 5; }
+}
+
+// ODI strategy
+public class OneDayMatch implements MatchType {
+    @Override
+    public int noOfOvers() { return 50; }
+    
+    @Override
+    public int maxOverCountBowlers() { return 10; }
+}
+
+// Usage in Match
+Match match = new Match(teamA, teamB, new T20Match());
+int totalOvers = match.matchType.noOfOvers(); // Returns 20 for T20
+```
+
+**Benefits**:
+* ✅ **Flexibility**: Change match format at runtime
+* ✅ **Encapsulation**: Each format's rules are self-contained
+* ✅ **Open/Closed**: Add new formats without modifying existing code
+* ✅ **Single Responsibility**: Each strategy handles one format's rules
+* ✅ **Extensibility**: Easy to add T10, The Hundred, etc.
+
+---
+
+### Controller Pattern (Implemented)
+
+**Purpose**: Separate complex batting and bowling management logic from the Team class, achieving better separation of concerns.
+
+**Problem Statement**:
+* **Challenge**: Team needs to manage batting order and bowling rotation
+* **Issue**: Putting all logic in Team class violates Single Responsibility
+* **Solution**: Dedicated controllers for batting and bowling management
+
+**Implementation**:
+* **Facade**: `Team` (delegates to controllers)
+* **Controllers**: `PlayerBattingController`, `PlayerBowlingController`
+* **Managed Objects**: `PlayerDetails` (players)
+
+**How it works**:
+
+```java
+// Team delegates to controllers
+public class Team {
+    private PlayerBattingController battingController;
+    private PlayerBowlingController bowlingController;
+    
+    public void chooseNextBatsMan() {
+        battingController.getNextPlayer();
+    }
+    
+    public void chooseNextBowler(int maxOverCount) {
+        bowlingController.getNextBowler(maxOverCount);
+    }
+}
+
+// Batting Controller manages batting order
+public class PlayerBattingController {
+    private Queue<PlayerDetails> yetToPlay;
+    private PlayerDetails striker;
+    private PlayerDetails nonStriker;
+    
+    public void getNextPlayer() {
+        if (striker == null) {
+            striker = yetToPlay.poll();
+        } else {
+            nonStriker = yetToPlay.poll();
+        }
+    }
+}
+
+// Bowling Controller manages bowling rotation
+public class PlayerBowlingController {
+    private Deque<PlayerDetails> bowlersList;
+    private Map<PlayerDetails, Integer> bowlerVsOverCount;
+    
+    public void getNextBowler(int maxOverCount) {
+        // Rotate bowlers while respecting over limits
+        PlayerDetails bowler = bowlersList.poll();
+        if (bowlerVsOverCount.get(bowler) < maxOverCount) {
+            currentBowler = bowler;
+            bowlersList.addLast(bowler);
+        }
+    }
+}
+```
+
+**Benefits**:
+* ✅ **Separation of Concerns**: Team doesn't handle rotation logic
+* ✅ **Single Responsibility**: Each controller has one job
+* ✅ **Testability**: Controllers testable independently
+* ✅ **Reusability**: Controllers reusable across teams
+* ✅ **Maintainability**: Complex logic isolated and manageable
+
+---
+
+### Real-World Analogies
+
+**Observer Pattern**:
+* **Breaking News**: News agency (subject) → Multiple news channels (observers)
+* **Stock Market**: Stock price change (subject) → Multiple trading apps (observers)
+* **Social Media**: User posts (subject) → Followers get notifications (observers)
+
+**Strategy Pattern**:
+* **Payment Methods**: Shopping cart (context) → Credit card/PayPal/Cash (strategies)
+* **Transportation**: Trip planner (context) → Car/Train/Flight (strategies)
+* **Sorting**: Data processor (context) → QuickSort/MergeSort/BubbleSort (strategies)
+
+**Controller Pattern**:
+* **Traffic Control**: City (facade) → Traffic controllers (controllers) → Vehicles (managed)
+* **Restaurant**: Restaurant (facade) → Kitchen/Service controllers → Staff (managed)
+* **Airport**: Airport (facade) → Ground/Air traffic controllers → Aircraft (managed)
+
+---
+
+## UML Diagrams
+
+### 1. Complete System - Class Diagram
 
 ```mermaid
 classDiagram
-    %% ========== PRESENTATION LAYER ==========
     class Demo {
         +main(args: String[])$
         -addTeam(name: String): Team
         -addPlayer(name: String, type: PlayerType): PlayerDetails
     }
     
-    %% ========== MATCH MANAGEMENT LAYER ==========
     class Match {
         -Team teamA
         -Team teamB
@@ -41,7 +365,23 @@ classDiagram
         +maxOverCountBowlers(): int
     }
     
-    %% ========== INNING MANAGEMENT LAYER ==========
+    class Team {
+        +String teamName
+        +Queue~PlayerDetails~ playing11
+        +List~PlayerDetails~ bench
+        +PlayerBattingController battingController
+        +PlayerBowlingController bowlingController
+        +boolean isWinner
+        +Team(teamName, playing11, bench, bowlers)
+        +chooseNextBatsMan()
+        +chooseNextBowler(maxOverCount)
+        +getStriker(): PlayerDetails
+        +getCurrentBowler(): PlayerDetails
+        +getTotalRuns(): int
+        +printBattingScoreCard()
+        +printBowlingScoreCard()
+    }
+    
     class InningDetails {
         -Team battingTeam
         -Team bowlingTeam
@@ -76,22 +416,20 @@ classDiagram
         -isWicketTaken(): boolean
     }
     
-    %% ========== TEAM MANAGEMENT LAYER ==========
-    class Team {
-        +String teamName
-        +Queue~PlayerDetails~ playing11
-        +List~PlayerDetails~ bench
-        +PlayerBattingController battingController
-        +PlayerBowlingController bowlingController
-        +boolean isWinner
-        +Team(teamName, playing11, bench, bowlers)
-        +chooseNextBatsMan()
-        +chooseNextBowler(maxOverCount)
-        +getStriker(): PlayerDetails
-        +getCurrentBowler(): PlayerDetails
-        +getTotalRuns(): int
+    class PlayerDetails {
+        +Person person
+        +PlayerType playerType
+        +BattingScoreCard battingScoreCard
+        +BowlingScoreCard bowlingScoreCard
+        +PlayerDetails(person, playerType)
         +printBattingScoreCard()
         +printBowlingScoreCard()
+    }
+    
+    class Person {
+        +String name
+        +int age
+        +String address
     }
     
     class PlayerBattingController {
@@ -116,21 +454,17 @@ classDiagram
         +getCurrentBowler(): PlayerDetails
     }
     
-    %% ========== PLAYER LAYER ==========
-    class PlayerDetails {
-        +Person person
-        +PlayerType playerType
-        +BattingScoreCard battingScoreCard
-        +BowlingScoreCard bowlingScoreCard
-        +PlayerDetails(person, playerType)
-        +printBattingScoreCard()
-        +printBowlingScoreCard()
+    class ScoreUpdaterObserver {
+        <<interface>>
+        +update(ballDetails: BallDetails)*
     }
     
-    class Person {
-        +String name
-        +int age
-        +String address
+    class BattingScoreUpdater {
+        +update(ballDetails: BallDetails)
+    }
+    
+    class BowlingScoreUpdater {
+        +update(ballDetails: BallDetails)
     }
     
     class BattingScoreCard {
@@ -151,21 +485,6 @@ classDiagram
         +double economyRate
     }
     
-    %% ========== OBSERVER PATTERN LAYER ==========
-    class ScoreUpdaterObserver {
-        <<interface>>
-        +update(ballDetails: BallDetails)*
-    }
-    
-    class BattingScoreUpdater {
-        +update(ballDetails: BallDetails)
-    }
-    
-    class BowlingScoreUpdater {
-        +update(ballDetails: BallDetails)
-    }
-    
-    %% ========== DOMAIN MODELS ==========
     class Wicket {
         +WicketType wicketType
         +PlayerDetails takenBy
@@ -174,7 +493,6 @@ classDiagram
         +Wicket(wicketType, takenBy, overDetail, ballDetail)
     }
     
-    %% ========== ENUMERATIONS ==========
     class BallType {
         <<enumeration>>
         NORMAL
@@ -208,55 +526,46 @@ classDiagram
         CATCH
     }
     
-    %% ========== RELATIONSHIPS ==========
-    %% Presentation to Match
+    %% Relationships
     Demo ..> Match : creates
     Demo ..> Team : creates
-    
-    %% Match Layer Relationships
     Match o-- Team : has 2
     Match o-- InningDetails : has 2
     Match --> MatchType : uses
     MatchType <|.. T20Match : implements
     MatchType <|.. OneDayMatch : implements
     
-    %% Inning Layer Relationships
-    InningDetails --> Team : batting/bowling
-    InningDetails o-- OverDetails : contains
+    InningDetails o-- Team : batting/bowling
+    InningDetails o-- OverDetails : contains many
     InningDetails --> MatchType : uses
-    OverDetails o-- BallDetails : has 6
-    OverDetails --> PlayerDetails : bowler
     
-    %% Ball Relationships
-    BallDetails --> PlayerDetails : playedBy/bowledBy
+    OverDetails o-- BallDetails : contains 6
+    OverDetails --> Team : uses
+    
     BallDetails --> BallType : uses
     BallDetails --> RunType : uses
     BallDetails o-- Wicket : may have
     BallDetails o-- ScoreUpdaterObserver : notifies
     
-    %% Team Relationships
     Team *-- PlayerBattingController : has
     Team *-- PlayerBowlingController : has
     Team o-- PlayerDetails : has 11
-    PlayerBattingController --> PlayerDetails : manages
-    PlayerBowlingController --> PlayerDetails : manages
     
-    %% Player Relationships
+    PlayerBattingController o-- PlayerDetails : manages
+    PlayerBowlingController o-- PlayerDetails : manages
+    
     PlayerDetails *-- Person : has
     PlayerDetails --> PlayerType : is a
     PlayerDetails *-- BattingScoreCard : has
     PlayerDetails *-- BowlingScoreCard : has
     
-    %% Score Card Relationships
     BattingScoreCard o-- Wicket : may have
     
-    %% Wicket Relationships
     Wicket --> WicketType : uses
     Wicket --> PlayerDetails : taken by
-    Wicket --> OverDetails : occurred in
-    Wicket --> BallDetails : occurred on
+    Wicket --> OverDetails : in
+    Wicket --> BallDetails : on
     
-    %% Observer Pattern Relationships
     ScoreUpdaterObserver <|.. BattingScoreUpdater : implements
     ScoreUpdaterObserver <|.. BowlingScoreUpdater : implements
     BattingScoreUpdater ..> BattingScoreCard : updates
@@ -265,43 +574,36 @@ classDiagram
 
 ---
 
-## 2. Sequence Diagram - Complete Match Flow (Fixed)
+### 2. Sequence Diagram - Complete Match Flow
 
 ```mermaid
 sequenceDiagram
     participant Demo
     participant Match
-    participant TeamA as Team A
-    participant TeamB as Team B
+    participant Team
     participant Inning as InningDetails
     participant OvrDtl as OverDetails
     participant Ball as BallDetails
     participant Obs as ScoreUpdater
     
-    Note over Demo,Obs: Match Initialization
     Demo->>Match: new Match(teamA, teamB, matchType)
     Demo->>Match: startMatch()
     activate Match
     
     Match->>Match: toss()
-    Note over Match: Determine batting/bowling teams
+    Match->>Team: determine batting/bowling teams
     
-    rect rgb(200, 220, 240)
-        Note over Match,Obs: First Inning
+    loop For each Inning (2)
         Match->>Inning: new InningDetails(batting, bowling)
-        Match->>Inning: start(runsToWin = 0)
+        Match->>Inning: start(runsToWin)
         activate Inning
         
-        Inning->>TeamA: chooseNextBatsMan()
-        Inning->>TeamA: chooseNextBatsMan()
-        Note over TeamA: Striker and Non-Striker selected
+        Inning->>Team: chooseNextBatsMan()
         
-        loop For each Over (20 or 50)
-            Inning->>TeamB: chooseNextBowler(maxOverCount)
-            TeamB-->>Inning: bowler
-            
+        loop For each Over
+            Inning->>Team: chooseNextBowler()
             Inning->>OvrDtl: new OverDetails(overNumber, bowler)
-            Inning->>OvrDtl: startOver(battingTeam, bowlingTeam, runsToWin)
+            Inning->>OvrDtl: startOver(batting, bowling, runsToWin)
             activate OvrDtl
             
             loop For 6 balls
@@ -309,186 +611,104 @@ sequenceDiagram
                 OvrDtl->>Ball: startBallDelivery(batting, bowling, over)
                 activate Ball
                 
-                Ball->>Ball: determine BallType
+                Ball->>Ball: determine ball type
                 Ball->>Ball: isWicketTaken()
                 
                 alt Wicket Taken
-                    Ball->>TeamA: setStriker(null)
-                    Note over Ball: create Wicket object
-                    OvrDtl->>TeamA: chooseNextBatsMan()
-                    alt All players out
-                        Ball-->>OvrDtl: inning ends
-                    end
+                    Ball->>Team: setStriker(null)
+                    OvrDtl->>Team: chooseNextBatsMan()
                 else No Wicket
                     Ball->>Ball: getRunType()
-                    alt Odd runs (1 or 3)
-                        Ball->>TeamA: swap striker/non-striker
-                    end
+                    Ball->>Team: swap striker/non-striker if needed
                 end
                 
                 Ball->>Obs: notifyUpdaters(ballDetails)
                 activate Obs
-                Obs->>Obs: update BattingScoreCard
-                Obs->>Obs: update BowlingScoreCard
+                Obs->>Obs: update batting score
+                Obs->>Obs: update bowling score
                 Obs-->>Ball: done
                 deactivate Obs
                 
                 Ball-->>OvrDtl: ball complete
                 deactivate Ball
-            end
-            
-            OvrDtl->>TeamA: swap striker and non-striker
-            OvrDtl-->>Inning: over complete
-            deactivate OvrDtl
-        end
-        
-        Inning-->>Match: inning complete, totalRuns
-        deactivate Inning
-        
-        Match->>TeamA: printBattingScoreCard()
-        Match->>TeamB: printBowlingScoreCard()
-    end
-    
-    rect rgb(240, 220, 200)
-        Note over Match,Obs: Second Inning
-        Match->>Inning: new InningDetails(bowling, batting)
-        Match->>Inning: start(runsToWin = firstInningRuns + 1)
-        activate Inning
-        
-        Inning->>TeamB: chooseNextBatsMan()
-        Inning->>TeamB: chooseNextBatsMan()
-        
-        loop For each Over
-            Inning->>TeamA: chooseNextBowler(maxOverCount)
-            Inning->>OvrDtl: new OverDetails(overNumber, bowler)
-            Inning->>OvrDtl: startOver(battingTeam, bowlingTeam, runsToWin)
-            activate OvrDtl
-            
-            loop For 6 balls
-                OvrDtl->>Ball: new BallDetails(ballNumber)
-                OvrDtl->>Ball: startBallDelivery(batting, bowling, over)
-                activate Ball
-                
-                Ball->>Ball: process ball
-                Ball->>Obs: notifyUpdaters(ballDetails)
                 
                 alt Target Reached
-                    Ball-->>OvrDtl: return true (match won)
-                    OvrDtl-->>Inning: return true
+                    OvrDtl-->>Inning: return true (won)
                 end
-                
-                Ball-->>OvrDtl: ball complete
-                deactivate Ball
             end
             
             OvrDtl-->>Inning: over complete
             deactivate OvrDtl
-            
-            alt Target reached or all out
-                Note over Inning: Inning ends
-            end
         end
         
         Inning-->>Match: inning complete
         deactivate Inning
         
-        Match->>TeamB: printBattingScoreCard()
-        Match->>TeamA: printBowlingScoreCard()
+        Match->>Team: printBattingScoreCard()
+        Match->>Team: printBowlingScoreCard()
     end
     
-    Match->>Match: determineWinner()
-    Note over Match: Compare runs, set isWinner flag
+    Match->>Match: determine winner
     Match-->>Demo: match complete
     deactivate Match
 ```
 
 ---
 
-## 3. Observer Pattern - Score Update Flow
+### 3. Observer Pattern - Score Update Flow
 
 ```mermaid
-sequenceDiagram
-    participant Ball as BallDetails<br/>(Subject)
-    participant BatObs as BattingScoreUpdater<br/>(Observer)
-    participant BowlObs as BowlingScoreUpdater<br/>(Observer)
-    participant BatCard as BattingScoreCard
-    participant BowlCard as BowlingScoreCard
+classDiagram
+    class BallDetails {
+        <<Subject>>
+        -List~ScoreUpdaterObserver~ observers
+        +notifyUpdaters(ballDetails)
+    }
     
-    Note over Ball: Ball delivery completed
-    Ball->>Ball: notifyUpdaters(this)
+    class ScoreUpdaterObserver {
+        <<Observer Interface>>
+        +update(ballDetails)*
+    }
     
-    rect rgb(220, 240, 220)
-        Note over Ball,BatCard: Update Batting Score
-        Ball->>BatObs: update(ballDetails)
-        activate BatObs
-        
-        BatObs->>BatObs: Extract run type
-        
-        alt RunType is ONE, TWO, THREE, FOUR, or SIX
-            BatObs->>BatCard: totalRuns += runValue
-        end
-        
-        BatObs->>BatCard: totalBallsPlayed++
-        
-        alt RunType is FOUR
-            BatObs->>BatCard: totalFours++
-        else RunType is SIX
-            BatObs->>BatCard: totalSix++
-        end
-        
-        alt Wicket taken
-            BatObs->>BatCard: wicketDetails = wicket
-        end
-        
-        BatObs->>BatCard: calculate strikeRate
-        Note over BatCard: strikeRate = (runs/balls) * 100
-        
-        BatObs-->>Ball: update complete
-        deactivate BatObs
-    end
+    class BattingScoreUpdater {
+        <<Concrete Observer>>
+        +update(ballDetails)
+    }
     
-    rect rgb(240, 220, 220)
-        Note over Ball,BowlCard: Update Bowling Score
-        Ball->>BowlObs: update(ballDetails)
-        activate BowlObs
-        
-        alt Ball number is 6 AND BallType is NORMAL
-            BowlObs->>BowlCard: totalOversCount++
-        end
-        
-        alt RunType is ONE, TWO, THREE, FOUR, or SIX
-            BowlObs->>BowlCard: runsGiven += runValue
-        end
-        
-        alt Wicket taken
-            BowlObs->>BowlCard: wicketsTaken++
-        end
-        
-        alt BallType is NOBALL
-            BowlObs->>BowlCard: noBallCount++
-        else BallType is WIDEBALL
-            BowlObs->>BowlCard: wideBallCount++
-        end
-        
-        BowlObs->>BowlCard: calculate economyRate
-        Note over BowlCard: economy = runs / (overs + balls/6)
-        
-        BowlObs-->>Ball: update complete
-        deactivate BowlObs
-    end
+    class BowlingScoreUpdater {
+        <<Concrete Observer>>
+        +update(ballDetails)
+    }
+    
+    class BattingScoreCard {
+        +totalRuns
+        +totalBallsPlayed
+        +totalFours
+        +totalSix
+    }
+    
+    class BowlingScoreCard {
+        +totalOversCount
+        +runsGiven
+        +wicketsTaken
+    }
+    
+    BallDetails o-- ScoreUpdaterObserver : notifies
+    ScoreUpdaterObserver <|.. BattingScoreUpdater : implements
+    ScoreUpdaterObserver <|.. BowlingScoreUpdater : implements
+    BattingScoreUpdater ..> BattingScoreCard : updates
+    BowlingScoreUpdater ..> BowlingScoreCard : updates
 ```
 
 ---
 
-## 4. Strategy Pattern - Match Type
+### 4. Strategy Pattern - Match Type
 
 ```mermaid
 classDiagram
     class Match {
         -MatchType matchType
         +startMatch()
-        +getMatchOvers()
-        +getMaxBowlerOvers()
     }
     
     class MatchType {
@@ -499,78 +719,72 @@ classDiagram
     
     class T20Match {
         <<Concrete Strategy>>
-        +noOfOvers(): int
-        +maxOverCountBowlers(): int
+        +noOfOvers(): int [returns 20]
+        +maxOverCountBowlers(): int [returns 5]
     }
     
     class OneDayMatch {
         <<Concrete Strategy>>
-        +noOfOvers(): int
-        +maxOverCountBowlers(): int
+        +noOfOvers(): int [returns 50]
+        +maxOverCountBowlers(): int [returns 10]
     }
     
     class TestMatch {
         <<Potential Strategy>>
-        +noOfOvers(): int
-        +maxOverCountBowlers(): int
+        +noOfOvers(): int [returns unlimited]
+        +maxOverCountBowlers(): int [returns unlimited]
     }
     
     Match --> MatchType : uses
     MatchType <|.. T20Match : implements
     MatchType <|.. OneDayMatch : implements
     MatchType <|.. TestMatch : implements
-    
-    note for T20Match "Returns:\n- 20 overs\n- Max 5 overs/bowler"
-    note for OneDayMatch "Returns:\n- 50 overs\n- Max 10 overs/bowler"
-    note for TestMatch "Returns:\n- Unlimited overs\n- No bowler limit"
 ```
 
 ---
 
-## 5. System Architecture - Layered View
+### 5. System Architecture - Component View
 
 ```mermaid
 graph TB
-    subgraph "Layer 1: Presentation"
+    subgraph "Presentation Layer"
         Demo[Demo/Main Class]
     end
     
-    subgraph "Layer 2: Match Orchestration"
+    subgraph "Match Management"
         Match[Match Controller]
         MatchType[Match Type Strategy]
     end
     
-    subgraph "Layer 3: Inning Management"
+    subgraph "Inning Management"
         Inning[Inning Details]
         Over[Over Details]
         Ball[Ball Details]
     end
     
-    subgraph "Layer 4: Team Management"
+    subgraph "Team Management"
         Team[Team]
         BatCtrl[Batting Controller]
         BowlCtrl[Bowling Controller]
     end
     
-    subgraph "Layer 5: Player Management"
+    subgraph "Player Management"
         Player[Player Details]
         Person[Person Info]
-        PlayerType[Player Type Enum]
+        PlayerType[Player Type]
     end
     
-    subgraph "Layer 6: Score Management"
-        Observer[Score Observer Interface]
+    subgraph "Score Management - Observer Pattern"
+        Observer[Score Updater Observer]
         BatUpdate[Batting Score Updater]
         BowlUpdate[Bowling Score Updater]
         BatScore[Batting Score Card]
         BowlScore[Bowling Score Card]
     end
     
-    subgraph "Layer 7: Domain Models"
+    subgraph "Domain Models"
         Wicket[Wicket]
-        BallType[Ball Type Enum]
-        RunType[Run Type Enum]
-        WicketType[Wicket Type Enum]
+        Enums[Enumerations<br/>BallType, RunType, WicketType]
     end
     
     Demo --> Match
@@ -597,359 +811,110 @@ graph TB
     BowlUpdate --> BowlScore
     
     Ball --> Wicket
-    Ball --> BallType
-    Ball --> RunType
-    Wicket --> WicketType
+    Ball --> Enums
     
-    style Demo fill:#e1f5ff,stroke:#333,stroke-width:2px
-    style Match fill:#fff4e1,stroke:#333,stroke-width:2px
-    style Observer fill:#ffe1f5,stroke:#333,stroke-width:2px
-    style Team fill:#e8f5e9,stroke:#333,stroke-width:2px
-    style Ball fill:#ffe4e1,stroke:#333,stroke-width:2px
+    style Demo fill:#e1f5ff
+    style Match fill:#fff4e1
+    style Observer fill:#ffe1f5
+    style Team fill:#e8f5e9
 ```
 
 ---
 
-## 6. Ball Delivery State Machine
+### 6. Match State Flow
 
 ```mermaid
 stateDiagram-v2
-    [*] --> BallCreated: new BallDetails()
-    BallCreated --> PlayersSet: Set playedBy & bowledBy
-    PlayersSet --> DetermineBallType: Assign ball type
+    [*] --> MatchCreated: new Match()
+    MatchCreated --> TossCompleted: toss()
     
-    DetermineBallType --> CheckWicket: Ball delivered
+    TossCompleted --> Inning1Start: Start Inning 1
     
-    state CheckWicket {
-        [*] --> WicketCheck
-        WicketCheck --> Wicket: 20% probability
-        WicketCheck --> NoWicket: 80% probability
-    }
-    
-    state Wicket {
-        [*] --> SetRunZero
-        SetRunZero --> CreateWicketObject
-        CreateWicketObject --> ClearStriker
-        ClearStriker --> [*]
-    }
-    
-    state NoWicket {
-        [*] --> GenerateRunType
-        GenerateRunType --> CheckOddRuns
-        CheckOddRuns --> SwapBatsmen: If 1 or 3
-        CheckOddRuns --> KeepBatsmen: If 0, 2, 4, 6
-        SwapBatsmen --> [*]
-        KeepBatsmen --> [*]
-    }
-    
-    CheckWicket --> NotifyObservers
-    
-    state NotifyObservers {
-        [*] --> BattingUpdate
-        [*] --> BowlingUpdate
-        BattingUpdate --> [*]
-        BowlingUpdate --> [*]
-    }
-    
-    NotifyObservers --> BallComplete
-    BallComplete --> [*]
-```
-
----
-
-## 7. Over Completion Flow
-
-```mermaid
-flowchart TD
-    Start([Over Starts]) --> CreateOver[Create OverDetails<br/>overNumber, bowler]
-    CreateOver --> BallLoop{Ball count < 6?}
-    
-    BallLoop -->|Yes| CreateBall[Create BallDetails]
-    CreateBall --> DeliverBall[startBallDelivery]
-    
-    DeliverBall --> ProcessBall[Process ball result]
-    ProcessBall --> CheckWicket{Wicket<br/>taken?}
-    
-    CheckWicket -->|Yes| NextBatsman[Choose next batsman]
-    NextBatsman --> CheckAllOut{All players<br/>out?}
-    CheckAllOut -->|Yes| InningEnd([Inning Ends])
-    CheckAllOut -->|No| CheckTarget
-    
-    CheckWicket -->|No| CheckTarget{Target<br/>reached?}
-    CheckTarget -->|Yes 2nd Inning| MatchWon([Team Wins])
-    CheckTarget -->|No| IncrementBall[ballCount++]
-    
-    IncrementBall --> BallLoop
-    
-    BallLoop -->|No 6 balls done| SwapEnds[Swap striker & non-striker]
-    SwapEnds --> OverComplete([Over Complete])
-    
-    style Start fill:#4CAF50,color:#fff
-    style InningEnd fill:#F44336,color:#fff
-    style MatchWon fill:#FF9800,color:#fff
-    style OverComplete fill:#2196F3,color:#fff
-```
-
----
-
-## 8. Team Structure Diagram
-
-```mermaid
-graph TB
-    subgraph Team["Team Structure"]
-        direction TB
-        TeamRoot[Team<br/>teamName: String<br/>isWinner: boolean]
+    state Inning1Start {
+        [*] --> BatsmanSelected: choose batsmen
+        BatsmanSelected --> OverStart: choose bowler
         
-        subgraph Players["Players Collection"]
-            Playing11[Playing 11<br/>Queue of PlayerDetails]
-            Bench[Bench Players<br/>List of PlayerDetails]
-        end
-        
-        subgraph Controllers["Team Controllers"]
-            BatCtrl[PlayerBattingController]
-            BowlCtrl[PlayerBowlingController]
-        end
-        
-        TeamRoot --> Players
-        TeamRoot --> Controllers
-    end
-    
-    subgraph BattingController["Batting Controller Details"]
-        YetToPlay[yetToPlay: Queue]
-        Striker[striker: PlayerDetails]
-        NonStriker[nonStriker: PlayerDetails]
-        
-        GetNext[getNextPlayer]
-        SetStriker[setStriker]
-        GetStriker[getStriker]
-    end
-    
-    subgraph BowlingController["Bowling Controller Details"]
-        BowlersList[bowlersList: Deque]
-        BowlerCount[bowlerVsOverCount: Map]
-        CurrentBowler[currentBowler: PlayerDetails]
-        
-        GetNextBowler[getNextBowler]
-        GetCurrent[getCurrentBowler]
-    end
-    
-    subgraph PlayerStructure["Player Details"]
-        PersonInfo[Person<br/>name, age, address]
-        PType[PlayerType<br/>ALLROUNDER, BATSMAN, etc]
-        BatScore[BattingScoreCard]
-        BowlScore[BowlingScoreCard]
-    end
-    
-    BatCtrl -.-> BattingController
-    BowlCtrl -.-> BowlingController
-    Playing11 -.-> PlayerStructure
-    
-    style TeamRoot fill:#4CAF50,color:#fff
-    style BatCtrl fill:#2196F3,color:#fff
-    style BowlCtrl fill:#FF9800,color:#fff
-```
-
----
-
-## 9. Match State Flow Diagram
-
-```mermaid
-stateDiagram-v2
-    [*] --> MatchCreated: Demo creates Match
-    MatchCreated --> TossCompleted: Conduct toss
-    
-    TossCompleted --> Inning1: Start First Inning
-    
-    state Inning1 {
-        [*] --> SelectBatsmen: Choose 2 batsmen
-        SelectBatsmen --> OverLoop
-        
-        state OverLoop {
-            [*] --> SelectBowler
-            SelectBowler --> DeliverBalls
+        state OverStart {
+            [*] --> Ball1
+            Ball1 --> Ball2
+            Ball2 --> Ball3
+            Ball3 --> Ball4
+            Ball4 --> Ball5
+            Ball5 --> Ball6
+            Ball6 --> [*]
             
-            state DeliverBalls {
-                [*] --> Ball1
-                Ball1 --> Ball2
-                Ball2 --> Ball3
-                Ball3 --> Ball4
-                Ball4 --> Ball5
-                Ball5 --> Ball6
-                
-                note right of Ball1
-                    After each ball:
-                    - Check wicket
-                    - Update scores
-                    - Swap batsmen if needed
-                end note
-            }
-            
-            DeliverBalls --> [*]: 6 balls done
+            Ball1 --> WicketCheck: after each ball
+            WicketCheck --> NextBatsman: if wicket
+            WicketCheck --> Ball2: no wicket
+            NextBatsman --> Ball2
         }
         
-        OverLoop --> OverLoop: Next over
-        OverLoop --> [*]: All overs done OR all out
+        OverStart --> NextOver: 6 balls complete
+        NextOver --> OverStart: more overs
+        NextOver --> [*]: all overs done
     }
     
-    Inning1 --> PrintScores1: Print scorecards
-    PrintScores1 --> Inning2: Start Second Inning
+    Inning1Start --> Inning1Complete
+    Inning1Complete --> Inning2Start: Start Inning 2
     
-    state Inning2 {
-        [*] --> SetTarget: Target = firstInningRuns + 1
-        SetTarget --> SelectBatsmen2
-        SelectBatsmen2 --> ChaseLoop
-        
-        state ChaseLoop {
-            [*] --> SelectBowler2
-            SelectBowler2 --> DeliverBalls2
-            
-            DeliverBalls2 --> CheckTarget: After each ball
-            CheckTarget --> TargetReached: If runs >= target
-            CheckTarget --> Continue: Otherwise
-            Continue --> DeliverBalls2
-            
-            DeliverBalls2 --> [*]: Over complete
-        }
-        
-        ChaseLoop --> ChaseLoop: Next over
-        ChaseLoop --> [*]: Target reached OR overs done
+    state Inning2Start {
+        [*] --> ChasingTarget
+        ChasingTarget --> OverStart2: overs
+        OverStart2 --> TargetCheck: after each ball
+        TargetCheck --> [*]: target reached
+        TargetCheck --> OverStart2: continue
+        OverStart2 --> [*]: all overs done
     }
     
-    Inning2 --> PrintScores2: Print scorecards
-    PrintScores2 --> DetermineWinner: Compare total runs
-    
-    state DetermineWinner {
-        [*] --> CompareScores
-        CompareScores --> SetWinner: Mark winner team
-        SetWinner --> [*]
-    }
-    
-    DetermineWinner --> MatchComplete
-    MatchComplete --> [*]
-    
-    note right of Inning1
-        Batting team tries to
-        score maximum runs
-    end note
-    
-    note right of Inning2
-        Chasing team needs to
-        score target runs
-    end note
+    Inning2Start --> Inning2Complete
+    Inning2Complete --> DetermineWinner
+    DetermineWinner --> MatchEnded
+    MatchEnded --> [*]
 ```
 
 ---
 
-## 10. Observer Pattern - Detailed Class Structure
-
-```mermaid
-classDiagram
-    class BallDetails {
-        <<Subject>>
-        -List~ScoreUpdaterObserver~ scoreUpdaterObserverList
-        +notifyUpdaters(ballDetails)
-        +startBallDelivery()
-    }
-    
-    class ScoreUpdaterObserver {
-        <<Observer Interface>>
-        +update(ballDetails: BallDetails)*
-    }
-    
-    class BattingScoreUpdater {
-        <<Concrete Observer>>
-        +update(ballDetails: BallDetails)
-        -updateRuns(runType, scoreCard)
-        -updateBalls(scoreCard)
-        -updateBoundaries(runType, scoreCard)
-        -updateWicket(wicket, scoreCard)
-    }
-    
-    class BowlingScoreUpdater {
-        <<Concrete Observer>>
-        +update(ballDetails: BallDetails)
-        -updateOvers(ballNumber, ballType, scoreCard)
-        -updateRunsGiven(runType, scoreCard)
-        -updateWickets(wicket, scoreCard)
-        -updateExtras(ballType, scoreCard)
-    }
-    
-    class BattingScoreCard {
-        +int totalRuns
-        +int totalBallsPlayed
-        +int totalFours
-        +int totalSix
-        +double strikeRate
-        +Wicket wicketDetails
-    }
-    
-    class BowlingScoreCard {
-        +int totalOversCount
-        +int runsGiven
-        +int wicketsTaken
-        +int noBallCount
-        +int wideBallCount
-        +double economyRate
-    }
-    
-    BallDetails o-- ScoreUpdaterObserver : maintains list
-    ScoreUpdaterObserver <|.. BattingScoreUpdater : implements
-    ScoreUpdaterObserver <|.. BowlingScoreUpdater : implements
-    BattingScoreUpdater ..> BattingScoreCard : updates
-    BowlingScoreUpdater ..> BowlingScoreCard : updates
-    
-    note for BallDetails "After ball delivery:\n1. Determine outcome\n2. Notify all observers\n3. Observers update scores"
-    note for BattingScoreUpdater "Updates:\n- Runs scored\n- Balls played\n- Fours and sixes\n- Wicket details"
-    note for BowlingScoreUpdater "Updates:\n- Overs bowled\n- Runs conceded\n- Wickets taken\n- Extras (wides, no-balls)"
-```
-
----
-
-## 11. Design Patterns Summary
+### 7. Design Patterns Used
 
 ```mermaid
 mindmap
     root((Design Patterns<br/>in Cricbuzz))
         Observer Pattern
-            Purpose: Score Updates
-            Subject: BallDetails
-            Observers
-                BattingScoreUpdater
-                BowlingScoreUpdater
-            Benefits
-                Loose coupling
-                Easy to add observers
-                Automatic notifications
+            BallDetails as Subject
+            Score Updaters as Observers
+            Batting Score Updater
+            Bowling Score Updater
+            Automatic score updates
         Strategy Pattern
-            Purpose: Match Rules
-            Context: Match
-            Strategies
-                T20Match
-                OneDayMatch
-                TestMatch
-            Benefits
-                Runtime strategy change
-                Easy to add formats
-                Encapsulated algorithms
+            MatchType interface
+            T20Match strategy
+            OneDayMatch strategy
+            Different match rules
         Controller Pattern
-            Purpose: Separate Logic
-            Controllers
-                PlayerBattingController
-                PlayerBowlingController
-            Benefits
-                Single Responsibility
-                Testable
-                Reusable
-        Facade Pattern
-            Purpose: Simplified Interface
-            Facade: Team
-            Subsystems
-                BattingController
-                BowlingController
-                PlayerDetails
-            Benefits
-                Hide complexity
-                Unified interface
+            PlayerBattingController
+            PlayerBowlingController
+            Separate concerns
+        MVC Pattern
+            Model: Player, Team, Match
+            Controller: Match, Inning
+            View: Print methods
 ```
 
 ---
+
+### 8. Ball Delivery Flow
+
+```mermaid
+flowchart TD
+    Start([Ball Delivery Starts]) --> CreateBall[Create BallDetails]
+    CreateBall --> SetPlayers[Set playedBy & bowledBy]
+    SetPlayers --> DetermineBallType[Determine Ball Type<br/>NORMAL/WIDE/NOBALL]
+    
+    DetermineBallType --> CheckWicket{Is Wicket<br/>Taken?}
+    
+    CheckWicket -->|Yes 20%| Wicket[Set runType = ZERO]
+    Wicket --> CreateWicket[Create Wicket object]
+    CreateWicket --> SetStriker[Set striker = null]
+    SetStriker --> NotifyObservers
+    
+    CheckWicket -->|No 80
